@@ -1,0 +1,14 @@
+{% extends 'showroom/base.html' %}
+{% block content %}
+<div class="card p-4 shadow-sm mx-auto" style="max-width: 600px;">
+    <h3 class="fw-bold mb-3">จัดการข้อมูลรถมอเตอร์ไซค์</h3>
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="mt-3">
+            <button type="submit" class="btn btn-success">บันทึกข้อมูล</button>
+            <a href="{% url 'bike_list' %}" class="btn btn-secondary">ยกเลิก</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'showroom/base.html' %}
+{% block content %}
+<h2 class="fw-bold mb-3">📦 สต็อกหน้าร้าน</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-3 mt-3 flex-wrap gap-2">
+    <div>
+        {% if user.is_authenticated and user.is_staff %}
+            <a href="{% url 'inventory_create' %}" class="btn btn-success">+ เพิ่มสต็อกใหม่</a>
+        {% endif %}
+    </div>
+
+    <form class="d-flex" method="GET">
+        <input class="form-control me-2" type="search" name="q" value="{{ query }}" placeholder="ค้นหาแบรนด์ หรือ รุ่น...">
+        <button class="btn btn-outline-primary" type="submit">ค้นหา</button>
+        {% if query %}
+            <a href="{% url 'inventory_list' %}" class="btn btn-outline-secondary ms-2">ล้างค่า</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>รุ่นรถ</th>
+                <th>สี</th>
+                <th>จำนวนคงเหลือ</th>
+                <th>ราคาต่อคัน</th>
+                <th>สถานะ</th>
+                <th class="text-center" style="width: 180px;">สั่งซื้อ / จัดการ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td><strong>{{ item.motorcycle.brand }}</strong> {{ item.motorcycle.model_name }}</td>
+                <td>{{ item.color }}</td>
+                <td>{{ item.quantity }} คัน</td>
+                <td>{{ item.motorcycle.price|floatformat:2 }} บาท</td>
+                <td>
+                    {% if item.status == 'Available' and item.quantity > 0 %}
+                        <span class="badge bg-success">พร้อมขาย</span>
+                    {% elif item.status == 'Reserved' %}
+                        <span class="badge bg-warning text-dark">จองแล้ว</span>
+                    {% else %}
+                        <span class="badge bg-danger">สินค้าหมด</span>
+                    {% endif %}
+                </td>
+                <td class="text-center">
+                    {% if item.quantity > 0 and item.status == 'Available' %}
+                        <a href="{% url 'checkout' item.pk %}" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-qrcode"></i> ชำระเงิน / สั่งซื้อ
+                        </a>
+                    {% else %}
+                        <button class="btn btn-secondary btn-sm" disabled>หมด</button>
+                    {% endif %}
+
+                    {% if user.is_authenticated and user.is_staff %}
+                        <a href="{% url 'inventory_update' item.pk %}" class="btn btn-warning btn-sm"><i class="fa-solid fa-pen"></i></a>
+                        <a href="{% url 'inventory_delete' item.pk %}" class="btn btn-danger btn-sm"><i class="fa-solid fa-trash"></i></a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center text-muted py-4">ยังไม่มีข้อมูลในสต็อก</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if items.has_other_pages %}
+<nav class="d-flex justify-content-center mt-4">
+    <ul class="pagination">
+        {% if items.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ items.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">&laquo; ก่อนหน้า</a></li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">&laquo; ก่อนหน้า</span></li>
+        {% endif %}
+
+        {% for num in items.paginator.page_range %}
+            <li class="page-item {% if items.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+            </li>
+        {% endfor %}
+
+        {% if items.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ items.next_page_number }}{% if query %}&q={{ query }}{% endif %}">ถัดไป &raquo;</a></li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">ถัดไป &raquo;</span></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

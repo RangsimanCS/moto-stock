@@ -1,0 +1,28 @@
+{% extends 'showroom/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h3 class="mb-4 text-center fw-bold"><i class="fa-solid fa-user-plus text-danger"></i> สมัครสมาชิก</h3>
+        <form method="post">
+            {% csrf_token %}
+            {% for field in form %}
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">{{ field.label }}</label>
+                    <input type="{{ field.field.widget.input_type }}" name="{{ field.name }}" class="form-control" {% if field.field.required %}required{% endif %}>
+                    {% if field.help_text %}
+                        <div class="form-text text-muted small">{{ field.help_text|safe }}</div>
+                    {% endif %}
+                    {% for error in field.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-danger w-100 py-2 mt-2">ยืนยันการสมัครสมาชิก</button>
+        </form>
+        <p class="text-center mt-3 mb-0">
+            มีบัญชีอยู่แล้ว? <a href="{% url 'login' %}">เข้าสู่ระบบที่นี่</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

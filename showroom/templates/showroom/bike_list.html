@@ -1,0 +1,88 @@
+{% extends 'showroom/base.html' %}
+{% block content %}
+<h2 class="fw-bold mb-3">รายการรถมอเตอร์ไซค์</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-3 mt-3 flex-wrap gap-2">
+    <div>
+        {% if user.is_authenticated and user.is_staff %}
+            <a href="{% url 'bike_create' %}" class="btn btn-success">+ เพิ่มรถใหม่</a>
+        {% endif %}
+    </div>
+
+    <form class="d-flex" method="GET">
+        <input class="form-control me-2" type="search" name="q" value="{{ query }}" placeholder="ค้นหาแบรนด์ หรือ รุ่น...">
+        <button class="btn btn-outline-primary" type="submit">ค้นหา</button>
+        {% if query %}
+            <a href="{% url 'bike_list' %}" class="btn btn-outline-secondary ms-2">ล้างค่า</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-bordered align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th class="text-center" style="width: 100px;">รูปรถ</th>
+                <th>แบรนด์</th>
+                <th>รุ่น</th>
+                <th>CC</th>
+                <th>ราคา</th>
+                {% if user.is_authenticated and user.is_staff %}
+                    <th class="text-center" style="width: 150px;">จัดการ</th>
+                {% endif %}
+            </tr>
+        </thead>
+        <tbody>
+            {% for bike in bikes %}
+            <tr>
+                <td class="text-center">
+                    {% if bike.image %}
+                        <img src="{{ bike.image.url }}" alt="{{ bike.model_name }}" class="rounded" style="width: 80px; height: 50px; object-fit: cover;">
+                    {% else %}
+                        <span class="text-muted small"><i class="fa-solid fa-image"></i> ไม่มีรูป</span>
+                    {% endif %}
+                </td>
+                <td>{{ bike.brand }}</td>
+                <td>{{ bike.model_name }}</td>
+                <td>{{ bike.engine_cc }}</td>
+                <td>{{ bike.price|floatformat:2 }} บาท</td>
+                {% if user.is_authenticated and user.is_staff %}
+                    <td class="text-center">
+                        <a href="{% url 'bike_update' bike.pk %}" class="btn btn-warning btn-sm">แก้ไข</a>
+                        <a href="{% url 'bike_delete' bike.pk %}" class="btn btn-danger btn-sm">ลบ</a>
+                    </td>
+                {% endif %}
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="6" class="text-center text-muted py-4">ยังไม่มีข้อมูลในระบบ</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if bikes.has_other_pages %}
+<nav class="d-flex justify-content-center mt-4">
+    <ul class="pagination">
+        {% if bikes.has_previous %}
+            <li class="page-item"><a class="page-link" href="?page={{ bikes.previous_page_number }}{% if query %}&q={{ query }}{% endif %}">&laquo; ก่อนหน้า</a></li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">&laquo; ก่อนหน้า</span></li>
+        {% endif %}
+
+        {% for num in bikes.paginator.page_range %}
+            <li class="page-item {% if bikes.number == num %}active{% endif %}">
+                <a class="page-link" href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}">{{ num }}</a>
+            </li>
+        {% endfor %}
+
+        {% if bikes.has_next %}
+            <li class="page-item"><a class="page-link" href="?page={{ bikes.next_page_number }}{% if query %}&q={{ query }}{% endif %}">ถัดไป &raquo;</a></li>
+        {% else %}
+            <li class="page-item disabled"><span class="page-link">ถัดไป &raquo;</span></li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
+{% endblock %}

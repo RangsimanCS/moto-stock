@@ -1,0 +1,16 @@
+{% extends 'showroom/base.html' %}
+{% block content %}
+<div class="card shadow mt-4">
+    <div class="card-header bg-success text-white">
+        <h4 class="mb-0">{% if form.instance.pk %}แก้ไขสต็อก{% else %}เพิ่มสต็อกใหม่{% endif %}</h4>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="btn btn-primary mt-2">บันทึกข้อมูล</button>
+            <a href="{% url 'inventory_list' %}" class="btn btn-secondary mt-2">ยกเลิก</a>
+        </form>
+    </div>
+</div>
+{% endblock %}

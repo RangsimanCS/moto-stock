@@ -1,0 +1,66 @@
+{% extends 'showroom/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-dark text-white text-center py-3">
+                <h4 class="mb-0"><i class="fa-solid fa-id-card"></i> ข้อมูลโปรไฟล์ส่วนตัว</h4>
+            </div>
+            <div class="card-body p-4">
+                <div class="text-center mb-4">
+                    {% if profile.profile_pic %}
+                        <img src="{{ profile.profile_pic.url }}" class="rounded-circle shadow" width="130" height="130" style="object-fit: cover;">
+                    {% else %}
+                        <i class="fa-solid fa-circle-user fa-6x text-secondary"></i>
+                    {% endif %}
+                    <h5 class="mt-2 fw-bold text-dark">{{ user.username }}</h5>
+                    <span class="badge {% if user.is_staff %}bg-danger{% else %}bg-primary{% endif %}">
+                        {% if user.is_staff %}ผู้ดูแลระบบ (Staff/Admin){% else %}ลูกค้าทั่วไป (Member){% endif %}
+                    </span>
+                </div>
+
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    <h6 class="fw-bold border-bottom pb-2 text-primary"><i class="fa-solid fa-user"></i> ข้อมูลทั่วไป</h6>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">ชื่อจริง</label>
+                            {{ u_form.first_name }}
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">นามสกุล</label>
+                            {{ u_form.last_name }}
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">อีเมล</label>
+                        {{ u_form.email }}
+                    </div>
+
+                    <h6 class="fw-bold border-bottom pb-2 mt-4 text-primary"><i class="fa-solid fa-address-book"></i> ข้อมูลติดต่อ & ที่อยู่</h6>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">เบอร์โทรศัพท์</label>
+                        {{ p_form.phone }}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">ที่อยู่จัดส่ง / ติดต่อ</label>
+                        {{ p_form.address }}
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">เปลี่ยนรูปโปรไฟล์</label>
+                        {{ p_form.profile_pic }}
+                    </div>
+
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-success fw-bold py-2">
+                            <i class="fa-solid fa-floppy-disk"></i> บันทึกการเปลี่ยนแปลง
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

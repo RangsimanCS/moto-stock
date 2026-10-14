@@ -1,0 +1,86 @@
+{% extends 'showroom/base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h3 class="fw-bold mb-0 text-dark">
+        <i class="fa-solid fa-clock-rotate-left text-primary"></i> 
+        {% if user.is_staff %}
+            รายการคำสั่งซื้อทั้งหมด 
+        {% else %}
+            ประวัติการสั่งซื้อของฉัน
+        {% endif %}
+    </h3>
+    <span class="badge bg-secondary fs-6">ทั้งหมด {{ orders.count }} รายการ</span>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle border text-center">
+        <thead class="table-dark">
+            <tr>
+                <th style="white-space: nowrap;">เลขที่</th>
+                <th style="white-space: nowrap;">ผู้ซื้อ</th>
+                {% if user.is_staff %}
+                    <th style="white-space: nowrap;">เบอร์โทร</th>
+                    <th style="min-width: 250px;">ที่อยู่จัดส่ง</th>
+                {% endif %}
+                <th style="white-space: nowrap;">รุ่นรถ</th>
+                <th style="white-space: nowrap;">สี</th>
+                <th style="white-space: nowrap;">จำนวน</th>
+                <th style="white-space: nowrap;">ราคารวม</th>
+                <th style="white-space: nowrap;">วันที่สั่งซื้อ</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for order in orders %}
+            <tr>
+                <td class="fw-bold text-muted">#{{ order.id }}</td>
+                <td>
+                    <span class="badge bg-info text-dark px-2 py-1">
+                        <i class="fa-solid fa-user me-1"></i>{{ order.user.username }}
+                    </span>
+                </td>
+
+                <!-- ข้อมูลติดต่อและที่อยู่ แสดงครบถ้วนไม่ตัดคำ -->
+                {% if user.is_staff %}
+                    <td style="white-space: nowrap;">
+                        {% if order.user.profile.phone %}
+                            <a href="tel:{{ order.user.profile.phone }}" class="text-decoration-none text-dark fw-semibold">
+                                <i class="fa-solid fa-phone text-success me-1"></i>{{ order.user.profile.phone }}
+                            </a>
+                        {% else %}
+                            <span class="text-muted small">- ไม่ระบุ -</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-start">
+                        {% if order.user.profile.address %}
+                            <span class="text-secondary small">
+                                <i class="fa-solid fa-location-dot text-danger me-1"></i>{{ order.user.profile.address }}
+                            </span>
+                        {% else %}
+                            <span class="text-muted small">- ไม่ระบุที่อยู่ -</span>
+                        {% endif %}
+                    </td>
+                {% endif %}
+
+                <td class="fw-semibold" style="white-space: nowrap;">
+                    <strong>{{ order.inventory.motorcycle.brand }}</strong> {{ order.inventory.motorcycle.model_name }}
+                </td>
+                <td style="white-space: nowrap;">
+                    <span class="badge bg-light text-dark border">{{ order.inventory.color }}</span>
+                </td>
+                <td style="white-space: nowrap;">{{ order.quantity }} คัน</td>
+                <td class="fw-bold text-success" style="white-space: nowrap;">{{ order.total_price }} บาท</td>
+                <td class="small text-muted" style="white-space: nowrap;">{{ order.order_date|date:"d/m/Y H:i น." }}</td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="{% if user.is_staff %}9{% else %}7{% endif %}" class="py-5 text-muted">
+                    <i class="fa-solid fa-box-open fa-3x mb-3 text-secondary d-block"></i>
+                    ยังไม่มีข้อมูลคำสั่งซื้อในระบบ
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

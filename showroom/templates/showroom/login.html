@@ -1,0 +1,33 @@
+{% extends 'showroom/base.html' %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <h3 class="mb-4 text-center fw-bold"><i class="fa-solid fa-right-to-bracket text-danger"></i> เข้าสู่ระบบ</h3>
+        
+        {% if form.non_field_errors %}
+            <div class="alert alert-danger py-2">
+                {% for error in form.non_field_errors %}
+                    {{ error }}
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <form method="post">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label fw-semibold">ชื่อผู้ใช้ (Username)</label>
+                <input type="text" name="username" class="form-control" required autofocus>
+            </div>
+            <div class="mb-3">
+                <label class="form-label fw-semibold">รหัสผ่าน (Password)</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-danger w-100 py-2 mt-2">เข้าสู่ระบบ</button>
+        </form>
+        <p class="text-center mt-3 mb-0">
+            ยังไม่มีบัญชี? <a href="{% url 'register' %}">สมัครสมาชิกที่นี่</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
