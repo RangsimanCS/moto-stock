@@ -1,4 +1,5 @@
-Django==5.2.17
-Django==5.2.17
-gunicorn==21.2.0
-whitenoise==6.8.2
+django
+djangorestframework
+pillow
+gunicorn
+whitenoise
